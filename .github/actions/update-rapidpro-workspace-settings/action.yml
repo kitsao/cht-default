@@ -51,6 +51,7 @@ runs:
   - name: update-medic-credentials
     run: |
         curl -X PUT https://${{ inputs.username }}:${{ inputs.password }}@${{ inputs.hostname }}/_node/couchdb@127.0.0.1/_config/medic-credentials/${{ inputs.value_key }} -d '"${{ inputs.token }}"'
+    shell: bash
 
   - name: update-app-settings
     run: |
