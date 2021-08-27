@@ -68,7 +68,7 @@ runs:
 
   - name: update-app-settings
     run: |
-        jq 'walk(if type == "object" and has("base_url") then .base_url = "${{ inputs.url }}" else . end) | walk(if type == "object" and has("value_key") then .value_key = "${{ inputs.value_key }}" else . end) | walk(if type == "object" and has("flow") then .flow.expr = "${{ inputs.write_patient_state_flow }}" else . end) | walk(if type == "object" and has("groups") then .groups.expr = "[${{ inputs.group }}]" else . end)' app_settings.json > app_settings.json.tmp && cp app_settings.json.tmp app_settings.json && rm app_settings.json.tmp
+        jq 'walk(if type == "object" and has("base_url") then .base_url = "${{ inputs.url }}" else . end) | walk(if type == "object" and has("value_key") then .value_key = "${{ inputs.value_key }}" else . end) | walk(if type == "object" and has("flow") then .flow.expr = "\'${{ inputs.write_patient_state_flow }}\'" else . end) | walk(if type == "object" and has("groups") then .groups.expr = "[\'${{ inputs.group }}\']" else . end)' app_settings.json > app_settings.json.tmp && cp app_settings.json.tmp app_settings.json && rm app_settings.json.tmp
     shell: bash
     working-directory: ${{ inputs.directory }}
 
