@@ -1,0 +1,66 @@
+name: 'Update rapidpro workspace settings'
+inputs:
+  directory:
+    description: The path to the directory containing the configuration to be updated.
+    required: true
+    default: '.'
+
+  hostname:
+    description: The hostname of the instance to receive the configuration.
+    required: true
+
+  username:
+    description: The username of an administrator account on the instance at "inputs.hostname". This user will make the deployment.
+    required: true
+
+  password:
+    description: The password for user with name "inputs.username"
+    required: true
+
+  url:
+    description: The base URL for your Rapidpro workspace.
+    required: true
+  
+  token:
+    description: The authorization token for your workspace (the real password configured in CouchDB's admin config).
+    required: true
+
+  value_key:
+    description: The password key configured in CouchDB's admin config.
+    required: true
+
+  group:
+    description: The UUID of the contact group to update in app-settings (optional).
+    required: true
+    default: ''
+
+  flows:
+    description: The list of flows for your workspace.
+    required: true
+outputs:
+  app-settings: 
+    description: Updated app-settings.json
+    value: ${{ steps.update-app-settings.outputs }}
+
+  flows: 
+    description: A flows.js file to be used in compile-app-settings
+    value: ${{ steps.generate-flows-js.outputs }}
+runs:
+  using: 'composite'
+  steps:
+  - name: update-medic-credentials
+    run: |
+        curl -X PUT https://${{ inputs.username }}:${{ inputs.password }}@${{ inputs.hostname }}/_node/couchdb@127.0.0.1/_config/medic-credentials/${{ inputs.value_key }} -d '"${{ inputs.token }}"'
+
+  - name: update-app-settings
+    run: |
+        jq 'walk(if type == "object" and has("base_url") then .base_url = "${{ inputs.url }}" else . end) | walk(if type == "object" and has("value_key") then .value_key = "${{ inputs.value_key }}" else . end) | walk(if type == "object" and has("groups") then .groups.expr = "['${{ inputs.group }}']" else . end)' settings.json > settings.json.tmp && cp settings.json.tmp settings.json && rm settings.json.tmp
+    shell: bash
+    working-directory: ${{ inputs.directory }}
+
+  - name: generate-flows-js
+    run: |
+        : > ./flows.js
+        echo -e "module.exports = ${{ inputs.flows }};" > ./flows.js
+    shell: bash
+    working-directory: ${{ inputs.directory }}
