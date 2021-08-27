@@ -48,6 +48,11 @@ outputs:
 runs:
   using: 'composite'
   steps:
+  - name: install dependencies
+    run: |
+        sudo apt install jq
+    shell: bash
+
   - name: update-medic-credentials
     run: |
         curl -X PUT https://${{ inputs.username }}:${{ inputs.password }}@${{ inputs.hostname }}/_node/couchdb@127.0.0.1/_config/medic-credentials/${{ inputs.value_key }} -d '"${{ inputs.token }}"'
