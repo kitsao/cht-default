@@ -69,7 +69,7 @@ runs:
 
   - name: update-app-settings
     run: |
-        node ./update_app_settings.js
+        node update_app_settings.js
     shell: bash
     working-directory: ${{ inputs.directory }}
 
