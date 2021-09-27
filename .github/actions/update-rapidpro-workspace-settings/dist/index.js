@@ -14067,14 +14067,6 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 7593:
-/***/ ((module) => {
-
-module.exports = eval("require")("./app_settings.json");
-
-
-/***/ }),
-
 /***/ 2233:
 /***/ ((module) => {
 
@@ -14266,7 +14258,6 @@ var __webpack_exports__ = {};
 (() => {
 const core = __nccwpck_require__(2183);
 const github = __nccwpck_require__(9250);
-const fs = __nccwpck_require__(5747);
 const replace = __nccwpck_require__(7575);
 
 const search = (haystack, needle) => needle in haystack ? haystack[needle] : Object.values(haystack).reduce((acc, val) => {
@@ -14279,7 +14270,8 @@ const search = (haystack, needle) => needle in haystack ? haystack[needle] : Obj
 const regex = expr => new RegExp(expr, 'g');
 
 try {
-  const appSettings = __nccwpck_require__(7593);
+  const path = core.getInput('directory');
+  const appSettings = require(path + '/app_settings.json');
   const rp_hostname = core.getInput('rp_hostname');
   const value_key = core.getInput('value_key');
   const rp_contact_group = core.getInput('rp_contact_group');

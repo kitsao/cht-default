@@ -1,6 +1,5 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-const fs = require('fs');
 const replace = require('replace-in-file');
 
 const search = (haystack, needle) => needle in haystack ? haystack[needle] : Object.values(haystack).reduce((acc, val) => {
@@ -13,7 +12,8 @@ const search = (haystack, needle) => needle in haystack ? haystack[needle] : Obj
 const regex = expr => new RegExp(expr, 'g');
 
 try {
-  const appSettings = require('./app_settings.json');
+  const path = core.getInput('directory');
+  const appSettings = require(path + '/app_settings.json');
   const rp_hostname = core.getInput('rp_hostname');
   const value_key = core.getInput('value_key');
   const rp_contact_group = core.getInput('rp_contact_group');
