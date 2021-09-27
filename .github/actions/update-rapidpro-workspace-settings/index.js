@@ -12,6 +12,8 @@ const search = (haystack, needle) => needle in haystack ? haystack[needle] : Obj
 const regex = expr => new RegExp(expr, 'g');
 
 try {
+  const path = core.getInput('directory');
+  process.chdir(path);
   const appSettings = require('./app_settings.json');
   const rp_hostname = core.getInput('rp_hostname');
   const value_key = core.getInput('value_key');
