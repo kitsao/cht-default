@@ -4,6 +4,7 @@
   "description": "dynamic-rapidpro-workspace Shared GitHub Action",
   "main": "index.js",
   "scripts": {
+    "build": "ncc build index.js -o dist --source-map",
     "test": "test"
   },
   "author": "Medic",
@@ -11,6 +12,7 @@
   "dependencies": {
     "@actions/core": "^1.5.0",
     "@actions/github": "^5.0.0",
+    "recursive-readdir": "^2.2.2",
     "replace-in-file": "^6.2.0"
   }
 }
