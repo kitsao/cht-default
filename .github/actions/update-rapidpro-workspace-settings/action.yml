@@ -57,4 +57,3 @@ outputs:
 runs:
   using: 'node12'
   main: 'dist/index.js'
-  working-directory: ${{ inputs.directory }}
