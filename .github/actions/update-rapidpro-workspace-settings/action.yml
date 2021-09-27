@@ -57,22 +57,3 @@ outputs:
 runs:
   using: 'node12'
   main: 'dist/index.js'
-
-  using: 'composite'
-  steps:
-  - name: install dependencies
-    run: |
-        npm i replace-in-file
-    shell: bash
-
-  - name: update-medic-credentials
-    run: |
-        curl -X PUT https://${{ inputs.couch_username }}:${{ inputs.couch_password }}@${{ inputs.hostname }}/_node/${{ inputs.couch_node_name }}/_config/medic-credentials/${{ inputs.value_key }} -d '"${{ inputs.rp_api_token }}"'
-    shell: bash
-
-  - name: generate-flows-js
-    run: |
-        : > ./flows.js
-        echo -e "module.exports = ${{ inputs.rp_flows }};" > ./flows.js
-    shell: bash
-    working-directory: ${{ inputs.directory }}
