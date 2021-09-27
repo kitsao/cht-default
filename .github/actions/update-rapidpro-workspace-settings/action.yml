@@ -55,7 +55,8 @@ outputs:
     value: ${{ steps.generate-flows-js.outputs }}
 
 runs:
-  using: 'composite'
+  using: 'node12'
+  main: 'dist/index.js'
   steps:
   - name: install dependencies
     run: |
@@ -66,12 +67,6 @@ runs:
     run: |
         curl -X PUT https://${{ inputs.couch_username }}:${{ inputs.couch_password }}@${{ inputs.hostname }}/_node/${{ inputs.couch_node_name }}/_config/medic-credentials/${{ inputs.value_key }} -d '"${{ inputs.rp_api_token }}"'
     shell: bash
-
-  - name: update-app-settings
-    run: |
-        node update_app_settings.js
-    shell: bash
-    working-directory: ${{ inputs.directory }}
 
   - name: generate-flows-js
     run: |
