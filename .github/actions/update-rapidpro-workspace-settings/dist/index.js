@@ -14267,6 +14267,7 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(2183);
 const github = __nccwpck_require__(9250);
 const replace = __nccwpck_require__(7575);
+const path = __nccwpck_require__(5622);
 
 const search = (haystack, needle) => needle in haystack ? haystack[needle] : Object.values(haystack).reduce((acc, val) => {
   if (acc !== undefined) {
@@ -14278,8 +14279,12 @@ const search = (haystack, needle) => needle in haystack ? haystack[needle] : Obj
 const regex = expr => new RegExp(expr, 'g');
 
 try {
-  const path = core.getInput('directory');
-  process.chdir(path);
+  const githubWorkspacePath = process.env['GITHUB_WORKSPACE']
+  if (!githubWorkspacePath) {
+    throw new Error('GITHUB_WORKSPACE not defined')
+  }
+  const codeRepository = path.resolve(path.resolve(githubWorkspacePath), core.getInput('directory'));
+  process.chdir(codeRepository);
   const appSettings = __nccwpck_require__(7593);
   const rp_hostname = core.getInput('rp_hostname');
   const value_key = core.getInput('value_key');
