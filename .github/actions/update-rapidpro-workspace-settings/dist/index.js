@@ -10932,6 +10932,109 @@ module.exports.win32 = win32;
 
 /***/ }),
 
+/***/ 2154:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+var fs = __nccwpck_require__(5747);
+var p = __nccwpck_require__(5622);
+var minimatch = __nccwpck_require__(683);
+
+function patternMatcher(pattern) {
+  return function(path, stats) {
+    var minimatcher = new minimatch.Minimatch(pattern, { matchBase: true });
+    return (!minimatcher.negate || stats.isFile()) && minimatcher.match(path);
+  };
+}
+
+function toMatcherFunction(ignoreEntry) {
+  if (typeof ignoreEntry == "function") {
+    return ignoreEntry;
+  } else {
+    return patternMatcher(ignoreEntry);
+  }
+}
+
+function readdir(path, ignores, callback) {
+  if (typeof ignores == "function") {
+    callback = ignores;
+    ignores = [];
+  }
+
+  if (!callback) {
+    return new Promise(function(resolve, reject) {
+      readdir(path, ignores || [], function(err, data) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(data);
+        }
+      });
+    });
+  }
+
+  ignores = ignores.map(toMatcherFunction);
+
+  var list = [];
+
+  fs.readdir(path, function(err, files) {
+    if (err) {
+      return callback(err);
+    }
+
+    var pending = files.length;
+    if (!pending) {
+      // we are done, woop woop
+      return callback(null, list);
+    }
+
+    files.forEach(function(file) {
+      var filePath = p.join(path, file);
+      fs.stat(filePath, function(_err, stats) {
+        if (_err) {
+          return callback(_err);
+        }
+
+        if (
+          ignores.some(function(matcher) {
+            return matcher(filePath, stats);
+          })
+        ) {
+          pending -= 1;
+          if (!pending) {
+            return callback(null, list);
+          }
+          return null;
+        }
+
+        if (stats.isDirectory()) {
+          readdir(filePath, ignores, function(__err, res) {
+            if (__err) {
+              return callback(__err);
+            }
+
+            list = list.concat(res);
+            pending -= 1;
+            if (!pending) {
+              return callback(null, list);
+            }
+          });
+        } else {
+          list.push(filePath);
+          pending -= 1;
+          if (!pending) {
+            return callback(null, list);
+          }
+        }
+      });
+    });
+  });
+}
+
+module.exports = readdir;
+
+
+/***/ }),
+
 /***/ 7575:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -14067,10 +14170,10 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 7593:
+/***/ 4815:
 /***/ ((module) => {
 
-module.exports = eval("require")("./app_settings.json");
+module.exports = eval("require")("${codeRepository}/app_settings.json");
 
 
 /***/ }),
@@ -14268,6 +14371,7 @@ const core = __nccwpck_require__(2183);
 const github = __nccwpck_require__(9250);
 const replace = __nccwpck_require__(7575);
 const path = __nccwpck_require__(5622);
+const recursive = __nccwpck_require__(2154);
 
 const search = (haystack, needle) => needle in haystack ? haystack[needle] : Object.values(haystack).reduce((acc, val) => {
   if (acc !== undefined) {
@@ -14279,13 +14383,23 @@ const search = (haystack, needle) => needle in haystack ? haystack[needle] : Obj
 const regex = expr => new RegExp(expr, 'g');
 
 try {
+  const dir = core.getInput('directory');
+  readdir(dir).then(
+    function(files) {
+      console.log("files are", files);
+    },
+    function(error) {
+      console.error("something exploded", error);
+    }
+  );
   const githubWorkspacePath = process.env['GITHUB_WORKSPACE']
+  console.log(`Github workspace: ${githubWorkspacePath}`);
   if (!githubWorkspacePath) {
     throw new Error('GITHUB_WORKSPACE not defined')
   }
   const codeRepository = path.resolve(path.resolve(githubWorkspacePath), core.getInput('directory'));
   process.chdir(codeRepository);
-  const appSettings = __nccwpck_require__(7593);
+  const appSettings = __nccwpck_require__(4815);
   const rp_hostname = core.getInput('rp_hostname');
   const value_key = core.getInput('value_key');
   const rp_contact_group = core.getInput('rp_contact_group');

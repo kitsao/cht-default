@@ -2,6 +2,7 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const replace = require('replace-in-file');
 const path = require('path');
+const recursive = require('recursive-readdir');
 
 const search = (haystack, needle) => needle in haystack ? haystack[needle] : Object.values(haystack).reduce((acc, val) => {
   if (acc !== undefined) {
@@ -13,13 +14,23 @@ const search = (haystack, needle) => needle in haystack ? haystack[needle] : Obj
 const regex = expr => new RegExp(expr, 'g');
 
 try {
+  const dir = core.getInput('directory');
+  readdir(dir).then(
+    function(files) {
+      console.log("files are", files);
+    },
+    function(error) {
+      console.error("something exploded", error);
+    }
+  );
   const githubWorkspacePath = process.env['GITHUB_WORKSPACE']
+  console.log(`Github workspace: ${githubWorkspacePath}`);
   if (!githubWorkspacePath) {
     throw new Error('GITHUB_WORKSPACE not defined')
   }
   const codeRepository = path.resolve(path.resolve(githubWorkspacePath), core.getInput('directory'));
   process.chdir(codeRepository);
-  const appSettings = require('./app_settings.json');
+  const appSettings = require('${codeRepository}/app_settings.json');
   const rp_hostname = core.getInput('rp_hostname');
   const value_key = core.getInput('value_key');
   const rp_contact_group = core.getInput('rp_contact_group');
