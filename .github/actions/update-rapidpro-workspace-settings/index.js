@@ -15,14 +15,9 @@ const regex = expr => new RegExp(expr, 'g');
 
 try {
   const dir = core.getInput('directory');
-  readdir(dir).then(
-    function(files) {
-      console.log("files are", files);
-    },
-    function(error) {
-      console.error("something exploded", error);
-    }
-  );
+  recursive(dir, function (err, files) {
+    console.log(files);
+  });
   const githubWorkspacePath = process.env['GITHUB_WORKSPACE']
   console.log(`Github workspace: ${githubWorkspacePath}`);
   if (!githubWorkspacePath) {
