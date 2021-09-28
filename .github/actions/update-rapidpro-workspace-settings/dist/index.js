@@ -14170,14 +14170,6 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 4815:
-/***/ ((module) => {
-
-module.exports = eval("require")("${codeRepository}/app_settings.json");
-
-
-/***/ }),
-
 /***/ 2233:
 /***/ ((module) => {
 
@@ -14383,18 +14375,18 @@ const search = (haystack, needle) => needle in haystack ? haystack[needle] : Obj
 const regex = expr => new RegExp(expr, 'g');
 
 try {
+  const githubWorkspacePath = process.env['GITHUB_WORKSPACE']
   const dir = core.getInput('directory');
   recursive(dir, function (err, files) {
     console.log(files);
   });
-  const githubWorkspacePath = process.env['GITHUB_WORKSPACE']
   console.log(`Github workspace: ${githubWorkspacePath}`);
   if (!githubWorkspacePath) {
     throw new Error('GITHUB_WORKSPACE not defined')
   }
   const codeRepository = path.resolve(path.resolve(githubWorkspacePath), core.getInput('directory'));
   process.chdir(codeRepository);
-  const appSettings = __nccwpck_require__(4815);
+  const appSettings = require(codeRepository+'/app_settings.json');
   const rp_hostname = core.getInput('rp_hostname');
   const value_key = core.getInput('value_key');
   const rp_contact_group = core.getInput('rp_contact_group');
