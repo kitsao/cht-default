@@ -15,17 +15,12 @@ const regex = expr => new RegExp(expr, 'g');
 
 try {
   const githubWorkspacePath = process.env['GITHUB_WORKSPACE']
-  const dir = core.getInput('directory');
-  recursive(dir, function (err, files) {
-    console.log(files);
-  });
-  console.log(`Github workspace: ${githubWorkspacePath}`);
   if (!githubWorkspacePath) {
     throw new Error('GITHUB_WORKSPACE not defined')
   }
   const codeRepository = path.resolve(path.resolve(githubWorkspacePath), core.getInput('directory'));
   process.chdir(codeRepository);
-  const appSettings = require(codeRepository+'/app_settings.json');
+  const appSettings = require('./app_settings.json');
   const rp_hostname = core.getInput('rp_hostname');
   const value_key = core.getInput('value_key');
   const rp_contact_group = core.getInput('rp_contact_group');
