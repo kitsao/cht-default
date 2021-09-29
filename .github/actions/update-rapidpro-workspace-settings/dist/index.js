@@ -17972,7 +17972,7 @@ const search = (haystack, needle) => needle in haystack ? haystack[needle] : Obj
 
 const regex = expr => new RegExp(expr, 'g');
 
-const setMedicCredentials = (couch_username, couch_password, hostname, couch_node_name, rp_api_token) => {
+const setMedicCredentials = (couch_username, couch_password, hostname, couch_node_name, value_key, rp_api_token) => {
   axios({
     method: 'put',
     url: `https://${couch_username}:${couch_password}@${hostname}/_node/${couch_node_name}/_config/medic-credentials/${value_key}`,
@@ -17981,8 +17981,6 @@ const setMedicCredentials = (couch_username, couch_password, hostname, couch_nod
 };
 
 try {
-
-
   const githubWorkspacePath = process.env['GITHUB_WORKSPACE'];
   const rp_hostname = core.getInput('rp_hostname');
   const value_key = core.getInput('value_key');
@@ -17994,7 +17992,7 @@ try {
   const couch_node_name = core.getInput('couch_node_name');
   const rp_api_token = core.getInput('rp_api_token');
   // Update medic core
-  setMedicCredentials(couch_username, couch_password, hostname, couch_node_name, rp_api_token);
+  setMedicCredentials(couch_username, couch_password, hostname, couch_node_name, value_key, rp_api_token);
   if (!githubWorkspacePath) {
     throw new Error('GITHUB_WORKSPACE not defined')
   }
