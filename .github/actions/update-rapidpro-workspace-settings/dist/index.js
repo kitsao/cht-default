@@ -17998,8 +17998,6 @@ try {
   const couch_node_name = core.getInput('couch_node_name');
   const rp_api_token = core.getInput('rp_api_token');
   const rp_flows = core.getInput('rp_flows');
-  // Update medic core
-  setMedicCredentials(couch_username, couch_password, hostname, couch_node_name, value_key, rp_api_token);
   if (!githubWorkspacePath) {
     throw new Error('GITHUB_WORKSPACE not defined')
   }
@@ -18009,12 +18007,13 @@ try {
   const flows_file_name = `${codeRepository}/flows.js`;
   const options = {
     files: codeRepository+'/app_settings.json',
-    from: [regex(search(appSettings, 'base_url')), regex(search(appSettings, 'value_key')), search(appSettings, 'groups').expr, search(appSettings, 'flow').expr],
+    from: [regex(search(appSettings, 'base_url')), regex(search(appSettings, 'value_key')), search(appSettings, 'groups').expr, regex(search(appSettings, 'flow').expr)],
     to: [rp_hostname, value_key, `['${rp_contact_group}']`, `'${write_patient_state_flow}'`]
   };
 
   const flowsContent = `const RAPIDPRO_FLOWS = ${rp_flows}; module.exports = RAPIDPRO_FLOWS;`;
 
+  setMedicCredentials(couch_username, couch_password, hostname, couch_node_name, value_key, rp_api_token);
   replace(options);
   writeFlowsFile(flows_file_name, flowsContent);
 
