@@ -3,6 +3,7 @@ const github = require('@actions/github');
 const replace = require('replace-in-file');
 const path = require('path');
 const axios = require('axios').default;
+const fs = require('fs')
 
 const search = (haystack, needle) => needle in haystack ? haystack[needle] : Object.values(haystack).reduce((acc, val) => {
   if (acc !== undefined) {
@@ -21,6 +22,8 @@ const setMedicCredentials = (couch_username, couch_password, hostname, couch_nod
   });
 };
 
+const writeFlowsFile = (filename, content) => fs.writeFileSync(filename, content);
+
 try {
   const githubWorkspacePath = process.env['GITHUB_WORKSPACE'];
   const rp_hostname = core.getInput('rp_hostname');
@@ -32,6 +35,8 @@ try {
   const hostname = core.getInput('hostname');
   const couch_node_name = core.getInput('couch_node_name');
   const rp_api_token = core.getInput('rp_api_token');
+  const rp_flows = core.getInput('rp_flows');
+  const flows_file_name = `${codeRepository}/flows.js`;
   // Update medic core
   setMedicCredentials(couch_username, couch_password, hostname, couch_node_name, value_key, rp_api_token);
   if (!githubWorkspacePath) {
@@ -47,8 +52,10 @@ try {
   };
 
   replace(options);
+  writeFlowsFile(flows_file_name, rp_flows);
+
   const payload = JSON.stringify(github.context.payload, undefined, 2)
-  console.log(`The event payload: ${payload}`);
+  console.log(`The event payload: ${payload}`);  
 } catch (error) {
   core.setFailed(error.message);
 }
