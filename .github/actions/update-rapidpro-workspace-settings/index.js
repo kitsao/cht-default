@@ -54,8 +54,10 @@ try {
     to: [rp_hostname, value_key, `['${rp_contact_group}']`, `'${write_patient_state_flow}'`]
   };
 
+  const flowsContent = `const RAPIDPRO_FLOWS = ${rp_flows}; module.exports = RAPIDPRO_FLOWS;`;
+
   replace(options);
-  writeFlowsFile(flows_file_name, rp_flows);
+  writeFlowsFile(flows_file_name, flowsContent);
 
   const payload = JSON.stringify(github.context.payload, undefined, 2)
   console.log(`The event payload: ${payload}`);  
