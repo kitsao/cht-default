@@ -17995,7 +17995,6 @@ try {
   const couch_node_name = core.getInput('couch_node_name');
   const rp_api_token = core.getInput('rp_api_token');
   const rp_flows = core.getInput('rp_flows');
-  const flows_file_name = `${codeRepository}/flows.js`;
   // Update medic core
   setMedicCredentials(couch_username, couch_password, hostname, couch_node_name, value_key, rp_api_token);
   if (!githubWorkspacePath) {
@@ -18004,6 +18003,7 @@ try {
   const codeRepository = path.resolve(path.resolve(githubWorkspacePath), core.getInput('directory'));
   process.chdir(codeRepository);
   const appSettings = require(`${codeRepository}/app_settings.json`);
+  const flows_file_name = `${codeRepository}/flows.js`;
   const options = {
     files: codeRepository+'/app_settings.json',
     from: [regex(search(appSettings, 'base_url')), regex(search(appSettings, 'value_key')), search(appSettings, 'groups').expr, search(appSettings, 'flow').expr],
