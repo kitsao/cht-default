@@ -22,7 +22,10 @@ const setMedicCredentials = (couch_username, couch_password, hostname, couch_nod
   });
 };
 
-const writeFlowsFile = (filename, content) => fs.writeFileSync(filename, content);
+const writeFlowsFile = (filename, content) => {
+  fs.truncateSync(filename);
+  fs.writeFileSync(filename, content);
+};
 
 try {
   const githubWorkspacePath = process.env['GITHUB_WORKSPACE'];
